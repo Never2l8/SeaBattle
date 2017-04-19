@@ -4,11 +4,19 @@ import java.util.ArrayList;
  * Created by nina on 4/18/17.
  */
 public class Ship {
-    ArrayList<Cell> cells;
+    private ArrayList<Cell> cells;
+    private ShipOrientation orientation;
+
 
     public Ship() {
+        this(ShipOrientation.HORIZONTAL);
+    }
+
+    public Ship(ShipOrientation orientation) {
+        this.orientation = orientation;
         cells = new ArrayList<>();
     }
+
 
     public ArrayList<Cell> getCells() {
         return cells;
@@ -31,4 +39,6 @@ public class Ship {
         }
         return false;
     }
+
+
 }

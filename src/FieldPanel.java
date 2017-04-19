@@ -171,6 +171,56 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
         }
     }
 
+    private boolean isSomeoneAlive() {
+        for (Ship ship : ships) {
+            if (ship.isAlive()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isStateLegal() {
+        for (Ship ship : ships) {
+            for (Cell cell : ship.getCells()) {
+
+
+            }
+        }
+
+    }
+
+    public ArrayList<Cell> getCellsAroundShip(Ship ship) {
+
+        ArrayList<Cell> cellsArroundShip = new ArrayList<>();
+        ArrayList<Cell> cellsAroundCurrenCell;
+        for (Cell cell : ship.getCells()) {
+            int row = cell.getRow();
+            int col = cell.getCol();
+            cellsAroundCurrenCell = new ArrayList<>();
+
+            if (row > 0) {
+                cellsAroundCurrenCell.add(field[row - 1][col]);
+            }
+            if (row > 0 && col < 9) {
+                cellsAroundCurrenCell.add(field[row - 1][col + 1]);
+            }
+            // etc
+            cellsAroundCurrenCell.add(field[row][col + 1]);
+            cellsAroundCurrenCell.add(field[row + 1][col + 1]);
+            cellsAroundCurrenCell.add(field[row + 1][col]);
+            cellsAroundCurrenCell.add(field[row + 1][col - 1]);
+            cellsAroundCurrenCell.add(field[row][col - 1]);
+            cellsAroundCurrenCell.add(field[row - 1][col - 1]);
+            for (Cell c : cellsAroundCurrenCell) {
+                if (c.getCellState() == CellState.EMPTY && !cellsArroundShip.contains(c)) {
+                    cellsArroundShip.add(c);
+                }
+            }
+        }
+        return cellsArroundShip;
+    }
+
 }
 
 
