@@ -205,7 +205,7 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
             if (row > 0 && col < 9) {
                 cellsAroundCurrenCell.add(field[row - 1][col + 1]);
             }
-            // etc
+            // etc etc etc etc
             cellsAroundCurrenCell.add(field[row][col + 1]);
             cellsAroundCurrenCell.add(field[row + 1][col + 1]);
             cellsAroundCurrenCell.add(field[row + 1][col]);
