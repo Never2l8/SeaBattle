@@ -192,7 +192,7 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
 
     public ArrayList<Cell> getCellsAroundShip(Ship ship) {
 
-        ArrayList<Cell> cellsArroundShip = new ArrayList<>();
+        ArrayList<Cell> cellsAroundShip = new ArrayList<>();
         ArrayList<Cell> cellsAroundCurrenCell;
         for (Cell cell : ship.getCells()) {
             int row = cell.getRow();
@@ -205,20 +205,38 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
             if (row > 0 && col < 9) {
                 cellsAroundCurrenCell.add(field[row - 1][col + 1]);
             }
-            // etc etc etc etc
-            cellsAroundCurrenCell.add(field[row][col + 1]);
-            cellsAroundCurrenCell.add(field[row + 1][col + 1]);
-            cellsAroundCurrenCell.add(field[row + 1][col]);
-            cellsAroundCurrenCell.add(field[row + 1][col - 1]);
-            cellsAroundCurrenCell.add(field[row][col - 1]);
-            cellsAroundCurrenCell.add(field[row - 1][col - 1]);
+            if (col < 9) {
+                cellsAroundCurrenCell.add(field[row][col + 1]);
+            }
+            if (row < 9 && col < 9) {
+                cellsAroundCurrenCell.add(field[row + 1][col + 1]);
+            }
+            if (row < 9) {
+                cellsAroundCurrenCell.add(field[row + 1][col]);
+            }
+            if (row < 9 && col > 0) {
+                cellsAroundCurrenCell.add(field[row + 1][col - 1]);
+            }
+            if (col > 0) {
+                cellsAroundCurrenCell.add(field[row][col - 1]);
+            }
+            if (row > 0 && col > 0) {
+                cellsAroundCurrenCell.add(field[row - 1][col - 1]);
+            }
             for (Cell c : cellsAroundCurrenCell) {
-                if (c.getCellState() == CellState.EMPTY && !cellsArroundShip.contains(c)) {
-                    cellsArroundShip.add(c);
+                if (c.getCellState() == CellState.EMPTY && !cellsAroundShip.contains(c)) {
+                    cellsAroundShip.add(c);
                 }
             }
         }
-        return cellsArroundShip;
+        return cellsAroundShip;
+    }
+
+    private void putDotsAroundShip(Ship ship) {
+        ArrayList<Cell> cellsAroundShip = getCellsAroundShip(ship);
+        for (Cell cell : cellsAroundShip) {
+            cell.setShooted(true);
+        }
     }
 
 }
