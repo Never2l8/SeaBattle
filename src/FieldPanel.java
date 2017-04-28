@@ -187,7 +187,7 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
 
             }
         }
-
+      return true;
     }
 
     public ArrayList<Cell> getCellsAroundShip(Ship ship) {
