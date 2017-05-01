@@ -1,13 +1,9 @@
-import javafx.util.Pair;
+package frames;
+
+import panel.FieldPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
 
 /**
  * Created by nina on 4/8/17.

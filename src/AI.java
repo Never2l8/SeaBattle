@@ -1,32 +1,59 @@
+import cell.Cell;
 import javafx.util.Pair;
+import panel.FieldPanel;
+import shot.Shot;
+
+import java.util.ArrayList;
 
 /**
  * Created by nina on 4/27/17.
  */
 public class AI {
-    int row;
-    int col;
+    Shot lastShot;
+    FieldPanel fieldPanel;
+    ArrayList<Cell> shotCandidates;
+    Shot lastChessOrderShot;
+    boolean switchLayout;
 
-    public Pair<Integer, Integer> getNextShot() {
-        if (col < 8) {
-            return new Pair<>(row, col + 2);
-        }
-        if (col >= 8) {
-            if (row % 2 == 0) {
-                return new Pair<>(row + 1, col = 1);
-
-            } else {
-                return new Pair<>(row + 1, col = 0);
-            }
-
-        }
-
-      return getNextShot();
+    public AI(FieldPanel fieldPanel) {
+        this.fieldPanel = fieldPanel;
     }
 
-    public void storePrevShot(Pair<Integer, Integer> prevShot) {
-        row = prevShot.getKey();
-        col = prevShot.getValue();
+    public Pair<Integer, Integer> getNextShot() {
+        int col = lastChessOrderShot.col;
+        int row = lastChessOrderShot.row;
+
+        if (col < 8) {
+            if (row == 9 && col + 2 == 9) {
+                switchLayout = true;
+            }
+            return new Pair<>(row, col + 2);
+        } else {
+            if (!switchLayout) {
+                if (row % 2 == 0) {
+                    return new Pair<>(row + 1, 1);
+
+                } else {
+                    return new Pair<>(row + 1, 0);
+                }
+            } else {
+                if (row % 2 == 0) {
+                    return new Pair<>(row + 1, 0);
+                } else {
+                    return new Pair<>(row + 1, 1);
+                }
+            }
+        }
+    }
+
+    public void storeLastShot(Shot lastShot) {
+        this.lastShot = lastShot;
+
+    }
+
+    // вызываем только если попали в корабль
+    public Shot getNextShotIntoShip() {
+        shotCandidates = fieldPanel.getShotCandidates(lastShot.row, lastShot.col);
 
     }
 }

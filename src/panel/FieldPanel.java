@@ -1,4 +1,10 @@
+package panel;
+
+import cell.Cell;
+import cell.CellState;
 import javafx.util.Pair;
+import ship.Ship;
+import shot.ShotResult;
 
 import javax.swing.*;
 import java.awt.*;
@@ -187,7 +193,7 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
 
             }
         }
-      return true;
+        return true;
     }
 
     public ArrayList<Cell> getCellsAroundShip(Ship ship) {
@@ -237,6 +243,16 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
         for (Cell cell : cellsAroundShip) {
             cell.setShooted(true);
         }
+    }
+
+    public ArrayList<Cell> getShotCandidates(int row, int col) {
+        ArrayList<Cell> shotCandidates = new ArrayList<>();
+        //TODO проверки на ArrayOutOfBounce, add only not shoted
+        shotCandidates.add(field[row - 1][col]);
+        shotCandidates.add(field[row][col + 1]);
+        shotCandidates.add(field[row + 1][col]);
+        shotCandidates.add(field[row][col - 1]);
+        return shotCandidates;
     }
 
 }

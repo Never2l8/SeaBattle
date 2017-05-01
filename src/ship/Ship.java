@@ -1,3 +1,7 @@
+package ship;
+
+import cell.Cell;
+
 import java.util.ArrayList;
 
 /**
