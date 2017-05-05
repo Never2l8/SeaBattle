@@ -1,3 +1,5 @@
+package frames;
+
 import cell.Cell;
 import javafx.util.Pair;
 import panel.FieldPanel;
@@ -23,10 +25,12 @@ public class AI {
         int col = lastChessOrderShot.col;
         int row = lastChessOrderShot.row;
 
+        if (row == 9 && col == 9) {
+            switchLayout = true;
+            Cell topLeftCell = fieldPanel.getTopLeftUnshootedCell();
+            return new Pair<>(topLeftCell.getRow(), topLeftCell.getCol());
+        }
         if (col < 8) {
-            if (row == 9 && col + 2 == 9) {
-                switchLayout = true;
-            }
             return new Pair<>(row, col + 2);
         } else {
             if (!switchLayout) {
@@ -52,8 +56,8 @@ public class AI {
     }
 
     // вызываем только если попали в корабль
-    public Shot getNextShotIntoShip() {
-        shotCandidates = fieldPanel.getShotCandidates(lastShot.row, lastShot.col);
-
-    }
+//    public Shot getNextShotIntoShip() {
+//        shotCandidates = fieldPanel.getShotCandidates(lastShot.row, lastShot.col);
+//
+//    }
 }

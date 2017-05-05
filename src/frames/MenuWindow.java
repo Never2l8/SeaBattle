@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 public class MenuWindow extends JFrame {
     public MenuWindow() {
         setSize(500, 500);
+
         ButtonPanel buttonPanel = new ButtonPanel();
         Container contentPane = getContentPane();
         contentPane.add(buttonPanel);

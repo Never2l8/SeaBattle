@@ -248,11 +248,56 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
     public ArrayList<Cell> getShotCandidates(int row, int col) {
         ArrayList<Cell> shotCandidates = new ArrayList<>();
         //TODO проверки на ArrayOutOfBounce, add only not shoted
-        shotCandidates.add(field[row - 1][col]);
-        shotCandidates.add(field[row][col + 1]);
-        shotCandidates.add(field[row + 1][col]);
-        shotCandidates.add(field[row][col - 1]);
+
+        //клетки в углу игрового поля:
+        if (row == 0 && col == 0) {
+            shotCandidates.add(field[row][col + 1]);
+            shotCandidates.add(field[row + 1][col]);
+        } else if (row == 9 && col == 0) {
+            shotCandidates.add(field[row - 1][col]);
+            shotCandidates.add(field[row][col + 1]);
+        } else if (row == 0 && col == 9) {
+            shotCandidates.add(field[row][col - 1]);
+            shotCandidates.add(field[row + 1][col]);
+        } else if (row == 9 && col == 9) {
+            shotCandidates.add(field[row - 1][col]);
+            shotCandidates.add(field[row][col - 1]);
+            //клетки у края игрового поля:
+        } else if (row == 0 && col > 0 && col < 9) {
+            shotCandidates.add(field[row][col + 1]);
+            shotCandidates.add(field[row + 1][col]);
+            shotCandidates.add(field[row][col - 1]);
+        } else if (row == 9 && col > 0 && col < 9) {
+            shotCandidates.add(field[row - 1][col]);
+            shotCandidates.add(field[row][col + 1]);
+            shotCandidates.add(field[row][col - 1]);
+        } else if (row > 0 && row < 9 && col == 0) {
+            shotCandidates.add(field[row - 1][col]);
+            shotCandidates.add(field[row][col + 1]);
+            shotCandidates.add(field[row + 1][col]);
+        } else if (row > 0 && row < 9 && col == 9) {
+            shotCandidates.add(field[row - 1][col]);
+            shotCandidates.add(field[row + 1][col]);
+            shotCandidates.add(field[row][col - 1]);
+            //все остальные клетки
+        } else {
+            shotCandidates.add(field[row - 1][col]);
+            shotCandidates.add(field[row][col + 1]);
+            shotCandidates.add(field[row + 1][col]);
+            shotCandidates.add(field[row][col - 1]);
+        }
         return shotCandidates;
+    }
+
+    public Cell getTopLeftUnshootedCell() {
+        for (int i = 0; i < field.length; i++) {
+            for (int j = 0; j < field.length; j++) {
+                if (!field[i][j].isShooted()) {
+                    return field[i][j];
+                }
+            }
+        }
+        return null;
     }
 
 }
