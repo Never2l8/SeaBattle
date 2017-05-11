@@ -131,6 +131,8 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
     @Override
     public void mouseClicked(MouseEvent e) {
         // SHOT FROM CLICK
+
+        //TODO PROCESS CLICK ONLY ON PLAYERS TURN
         Pair<Integer, Integer> coordinates = coordinatesToArrayIndex(e.getX(), e.getY());
         if (coordinates != null) {
             ShotResult result = shotResult((coordinates.getKey()), (coordinates.getValue()));
@@ -145,10 +147,12 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
         repaint();
     }
 
-    public void processShotResult(ShotResult result, Pair<Integer, Integer> coordinates) {
+    public boolean processShotResult(ShotResult result, Pair<Integer, Integer> coordinates) {
         if (result != ShotResult.ALREADYSHOT) {
             field[coordinates.getKey()][coordinates.getValue()].setShooted(true);
+            return true;
         }
+        return false;
     }
 
     private void addShip(ArrayList<Cell> cells) {
@@ -177,7 +181,7 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
         }
     }
 
-    private boolean isSomeoneAlive() {
+    public boolean isSomeoneAlive() {
         for (Ship ship : ships) {
             if (ship.isAlive()) {
                 return true;
@@ -247,44 +251,88 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
 
     public ArrayList<Cell> getShotCandidates(int row, int col) {
         ArrayList<Cell> shotCandidates = new ArrayList<>();
-        //TODO проверки на ArrayOutOfBounce, add only not shoted
-
         //клетки в углу игрового поля:
         if (row == 0 && col == 0) {
-            shotCandidates.add(field[row][col + 1]);
+            if (!field[row][col + 1].isShooted()) {
+                shotCandidates.add(field[row][col + 1]);
+            }
             shotCandidates.add(field[row + 1][col]);
         } else if (row == 9 && col == 0) {
-            shotCandidates.add(field[row - 1][col]);
-            shotCandidates.add(field[row][col + 1]);
+            if (!field[row - 1][col].isShooted()) {
+                shotCandidates.add(field[row - 1][col]);
+            }
+            if (!field[row][col + 1].isShooted()) {
+                shotCandidates.add(field[row][col + 1]);
+            }
         } else if (row == 0 && col == 9) {
-            shotCandidates.add(field[row][col - 1]);
-            shotCandidates.add(field[row + 1][col]);
+            if (!field[row][col - 1].isShooted()) {
+                shotCandidates.add(field[row][col - 1]);
+            }
+            if (!field[row + 1][col].isShooted()) {
+                shotCandidates.add(field[row + 1][col]);
+            }
         } else if (row == 9 && col == 9) {
-            shotCandidates.add(field[row - 1][col]);
-            shotCandidates.add(field[row][col - 1]);
+            if (!field[row - 1][col].isShooted()) {
+                shotCandidates.add(field[row - 1][col]);
+            }
+            if (!field[row][col - 1].isShooted()) {
+                shotCandidates.add(field[row][col - 1]);
+            }
             //клетки у края игрового поля:
         } else if (row == 0 && col > 0 && col < 9) {
-            shotCandidates.add(field[row][col + 1]);
-            shotCandidates.add(field[row + 1][col]);
-            shotCandidates.add(field[row][col - 1]);
+            if (!field[row][col + 1].isShooted()) {
+                shotCandidates.add(field[row][col + 1]);
+            }
+            if (!field[row + 1][col].isShooted()) {
+                shotCandidates.add(field[row + 1][col]);
+            }
+            if (!field[row][col - 1].isShooted()) {
+                shotCandidates.add(field[row][col - 1]);
+            }
         } else if (row == 9 && col > 0 && col < 9) {
-            shotCandidates.add(field[row - 1][col]);
-            shotCandidates.add(field[row][col + 1]);
-            shotCandidates.add(field[row][col - 1]);
+            if (!field[row - 1][col].isShooted()) {
+                shotCandidates.add(field[row - 1][col]);
+            }
+            if (!field[row][col + 1].isShooted()) {
+                shotCandidates.add(field[row][col + 1]);
+            }
+            if (!field[row][col - 1].isShooted()) {
+                shotCandidates.add(field[row][col - 1]);
+            }
         } else if (row > 0 && row < 9 && col == 0) {
-            shotCandidates.add(field[row - 1][col]);
-            shotCandidates.add(field[row][col + 1]);
-            shotCandidates.add(field[row + 1][col]);
+            if (!field[row - 1][col].isShooted()) {
+                shotCandidates.add(field[row - 1][col]);
+            }
+            if (!field[row][col + 1].isShooted()) {
+                shotCandidates.add(field[row][col + 1]);
+            }
+            if (!field[row + 1][col].isShooted()) {
+                shotCandidates.add(field[row + 1][col]);
+            }
         } else if (row > 0 && row < 9 && col == 9) {
-            shotCandidates.add(field[row - 1][col]);
-            shotCandidates.add(field[row + 1][col]);
-            shotCandidates.add(field[row][col - 1]);
+            if (!field[row - 1][col].isShooted()) {
+                shotCandidates.add(field[row - 1][col]);
+            }
+            if (!field[row + 1][col].isShooted()) {
+                shotCandidates.add(field[row + 1][col]);
+            }
+            if (!field[row][col - 1].isShooted()) {
+                shotCandidates.add(field[row][col - 1]);
+            }
             //все остальные клетки
         } else {
-            shotCandidates.add(field[row - 1][col]);
-            shotCandidates.add(field[row][col + 1]);
-            shotCandidates.add(field[row + 1][col]);
-            shotCandidates.add(field[row][col - 1]);
+            if (!field[row - 1][col].isShooted()) {
+                shotCandidates.add(field[row - 1][col]);
+            }
+            if (!field[row][col + 1].isShooted()) {
+                shotCandidates.add(field[row][col + 1]);
+            }
+            if (!field[row + 1][col].isShooted()) {
+                shotCandidates.add(field[row + 1][col]);
+            }
+            if (!field[row][col - 1].isShooted()) {
+                shotCandidates.add(field[row][col - 1]);
+            }
         }
         return shotCandidates;
     }

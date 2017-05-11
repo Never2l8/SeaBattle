@@ -21,6 +21,9 @@ public class NewGameWindow extends JFrame {
     private void init() {
         setSize(1200, 625);
         setTitle("GAME");
+        playersPanel = new FieldPanel(true);
+        ai = new AI(playersPanel);
+        aiPanel = new FieldPanel(false);
         Container contentPane = getContentPane();
         contentPane.setLayout(new GridLayout(1, 2));
         contentPane.add(playersPanel);
@@ -29,17 +32,17 @@ public class NewGameWindow extends JFrame {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
         setLocationRelativeTo(null);
-        playersPanel = new FieldPanel(true);
-        ai = new AI(playersPanel);
-        aiPanel = new FieldPanel(false);
         //TODO disable window resizing
     }
-    public void gameLoop(){
-        while ()
-    }
-    private boolean bothPlayersHaveShips(){
 
+    public void gameLoop() {
+        while (bothPlayersHaveShips()) {
+
+        }
     }
 
+    private boolean bothPlayersHaveShips() {
+        return aiPanel.isSomeoneAlive() && playersPanel.isSomeoneAlive();
+    }
 
 }
