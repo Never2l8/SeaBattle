@@ -6,5 +6,5 @@ package shot;
 public class Shot {
     public int row;
     public int col;
-    public ShotResult result;
+    public ShotResultEnum result;
 }

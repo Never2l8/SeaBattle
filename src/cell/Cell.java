@@ -4,13 +4,13 @@ package cell;
  * Created by nina on 4/9/17.
  */
 public class Cell {
-    private CellState cellState;
+    private CellStateEnum cellState;
     private boolean isShooted;
     private int row;
     private int col;
 
     public Cell(int row, int col) {
-        cellState = CellState.EMPTY;
+        cellState = CellStateEnum.EMPTY;
         isShooted = false;
         this.row = row;
         this.col = col;
@@ -24,11 +24,11 @@ public class Cell {
         return col;
     }
 
-    public CellState getCellState() {
+    public CellStateEnum getCellState() {
         return cellState;
     }
 
-    public void setCellState(CellState cellState) {
+    public void setCellState(CellStateEnum cellState) {
         this.cellState = cellState;
     }
 

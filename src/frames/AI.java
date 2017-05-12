@@ -3,6 +3,8 @@ package frames;
 import cell.Cell;
 import javafx.util.Pair;
 import panel.FieldPanel;
+import ship.Ship;
+import ship.ShipOrientationEnum;
 import shot.Shot;
 
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ public class AI {
     ArrayList<Cell> shotCandidates;
     Shot lastChessOrderShot;
     boolean switchLayout;
+    Ship currentTarget;
 
     public AI(FieldPanel fieldPanel) {
         this.fieldPanel = fieldPanel;
@@ -55,9 +58,57 @@ public class AI {
 
     }
 
-    // вызываем только если попали в корабль
-//    public Shot getNextShotIntoShip() {
-//        shotCandidates = fieldPanel.getShotCandidates(lastShot.row, lastShot.col);
-//
-//    }
+    // вызываем только если попали в корабль и не убили
+    public Shot getNextShotIntoShip() {
+        if (currentTarget.getCells().size() == 1) {
+            shotCandidates = fieldPanel.getShotCandidates(lastShot.row, lastShot.col);
+        } else {
+            if (currentTarget.getOrientation() == ShipOrientationEnum.HORIZONTAL) {
+                shotCandidates = new ArrayList<Cell>();
+                Cell left = currentTarget.getLeftCell();
+                int leftRow = left.getRow();
+                int leftCol = left.getCol();
+                Cell leftTarget = fieldPanel.getCell(leftRow, leftCol - 1);
+                Cell right = currentTarget.getRightCell();
+                int rightRow = right.getRow();
+                int rightCol = right.getCol();
+                Cell rightTarget = fieldPanel.getCell(rightRow, rightCol + 1);
+                if (leftTarget != null && !leftTarget.isShooted()) {
+                    shotCandidates.add(rightTarget);
+                }
+                if (rightTarget != null && !rightTarget.isShooted()) {
+                    shotCandidates.add(rightTarget);
+                }
+                Shot shot = new Shot();
+                shot.row = shotCandidates.get(0).getRow();
+                shot.col = shotCandidates.get(0).getCol();
+                shotCandidates.remove(0);
+                return shot;
+            }
+            if (currentTarget.getOrientation() == ShipOrientationEnum.VERTICAL) {
+                shotCandidates = new ArrayList<Cell>();
+                Cell top = currentTarget.getTopCell();
+                int topRow = top.getRow();
+                int topCol = top.getCol();
+                Cell topTarget = fieldPanel.getCell(topRow - 1, topCol);
+                Cell bot = currentTarget.getBotCell();
+                int botRow = bot.getRow();
+                int botCol = bot.getCol();
+                Cell botTarget = fieldPanel.getCell(botRow + 1, botCol);
+                if (topTarget != null && !topTarget.isShooted()) {
+                    shotCandidates.add(topTarget);
+                }
+                if (botTarget != null && !botTarget.isShooted()) {
+                    shotCandidates.add(botTarget);
+                }
+                Shot shot = new Shot();
+                shot.row = shotCandidates.get(0).getRow();
+                shot.col = shotCandidates.get(0).getCol();
+                shotCandidates.remove(0);
+                return shot;
+            }
+
+        }
+        return null;
+    }
 }

@@ -1,10 +1,10 @@
 package panel;
 
 import cell.Cell;
-import cell.CellState;
+import cell.CellStateEnum;
 import javafx.util.Pair;
 import ship.Ship;
-import shot.ShotResult;
+import shot.ShotResultEnum;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,6 +30,7 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
     private Timer timer;
     private int animationStep;
     private ArrayList<Ship> ships;
+    private TurnEnum turn = TurnEnum.PLAYER;
 
     public FieldPanel(boolean isMine) {
         this.field = new Cell[10][10];
@@ -47,9 +48,9 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
                 field[i][j] = new Cell(i, j); //rewrite .fill
             }
         }
-        field[0][0].setCellState(CellState.SHIP);
-        field[5][3].setCellState(CellState.SHIP);
-        field[7][2].setCellState(CellState.SHIP);
+        field[0][0].setCellState(CellStateEnum.SHIP);
+        field[5][3].setCellState(CellStateEnum.SHIP);
+        field[7][2].setCellState(CellStateEnum.SHIP);
 
     }
 
@@ -88,10 +89,10 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
         Cell cell = field[row][col];
         if (cell.isShooted()) {
             // PAINT FILLED CIRCLE IN THE MIDDLE OF THE CELL
-            if (cell.getCellState() == CellState.EMPTY) {
+            if (cell.getCellState() == CellStateEnum.EMPTY) {
                 g2.draw(new Ellipse2D.Float(70 + 50 * col, 70 + 50 * row, 10, 10));
             }
-            if (cell.getCellState() == CellState.SHIP) {
+            if (cell.getCellState() == CellStateEnum.SHIP) {
                 g2.draw(new Line2D.Double(50 + 50 * col, 50 + 50 * row, 50 + 50 * col + 50, 50 + 50 * row + 50));
                 g2.draw(new Line2D.Double(50 + 50 * col + 50, 50 + 50 * row, 50 + 50 * col, 50 + 50 * row + 50));
 
@@ -108,15 +109,15 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
         return new Pair<>(i, j);
     }
 
-    public ShotResult shotResult(int i, int j) {
+    public ShotResultEnum shotResult(int i, int j) {
         if (field[i][j].isShooted()) {
-            return ShotResult.ALREADYSHOT;
+            return ShotResultEnum.ALREADYSHOT;
         }
-        if (field[i][j].getCellState() == CellState.SHIP) {
-            return ShotResult.SHOTSHIP;
+        if (field[i][j].getCellState() == CellStateEnum.SHIP) {
+            return ShotResultEnum.SHOTSHIP;
         }
-        if (field[i][j].getCellState() == CellState.EMPTY) {
-            return ShotResult.SHOTWATER;
+        if (field[i][j].getCellState() == CellStateEnum.EMPTY) {
+            return ShotResultEnum.SHOTWATER;
         }
         return null;
     }
@@ -131,14 +132,17 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
     @Override
     public void mouseClicked(MouseEvent e) {
         // SHOT FROM CLICK
-
-        //TODO PROCESS CLICK ONLY ON PLAYERS TURN
-        Pair<Integer, Integer> coordinates = coordinatesToArrayIndex(e.getX(), e.getY());
-        if (coordinates != null) {
-            ShotResult result = shotResult((coordinates.getKey()), (coordinates.getValue()));
-            processShotResult(result, coordinates);
+        if (turn == TurnEnum.PLAYER) {
+            Pair<Integer, Integer> coordinates = coordinatesToArrayIndex(e.getX(), e.getY());
+            if (coordinates != null) {
+                ShotResultEnum result = shotResult((coordinates.getKey()), (coordinates.getValue()));
+                if (result == ShotResultEnum.SHOTWATER) {
+                    switchTurn();
+                }
+                processShotResult(result, coordinates);
+            }
+            this.repaint();
         }
-        this.repaint();
     }
 
     @Override
@@ -147,8 +151,8 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
         repaint();
     }
 
-    public boolean processShotResult(ShotResult result, Pair<Integer, Integer> coordinates) {
-        if (result != ShotResult.ALREADYSHOT) {
+    public boolean processShotResult(ShotResultEnum result, Pair<Integer, Integer> coordinates) {
+        if (result != ShotResultEnum.ALREADYSHOT) {
             field[coordinates.getKey()][coordinates.getValue()].setShooted(true);
             return true;
         }
@@ -177,7 +181,7 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
 
     private void placeShipOnField(ArrayList<Cell> cells) {
         for (Cell cell : cells) {
-            cell.setCellState(CellState.SHIP);
+            cell.setCellState(CellStateEnum.SHIP);
         }
     }
 
@@ -234,7 +238,7 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
                 cellsAroundCurrenCell.add(field[row - 1][col - 1]);
             }
             for (Cell c : cellsAroundCurrenCell) {
-                if (c.getCellState() == CellState.EMPTY && !cellsAroundShip.contains(c)) {
+                if (c.getCellState() == CellStateEnum.EMPTY && !cellsAroundShip.contains(c)) {
                     cellsAroundShip.add(c);
                 }
             }
@@ -346,6 +350,18 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
             }
         }
         return null;
+    }
+
+    public void switchTurn() {
+        if (turn == TurnEnum.AI) turn = TurnEnum.PLAYER;
+        else turn = TurnEnum.AI;
+    }
+
+    public Cell getCell(int row, int col) {
+        if (row < 0 || row > 9 || col < 0 || col > 9) {
+            return null;
+        }
+        return field[row][col];
     }
 
 }
