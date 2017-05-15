@@ -2,8 +2,11 @@ package panel;
 
 import cell.Cell;
 import cell.CellStateEnum;
+import frames.AI;
 import javafx.util.Pair;
 import ship.Ship;
+import ship.ShipOrientationEnum;
+import shot.Shot;
 import shot.ShotResultEnum;
 
 import javax.swing.*;
@@ -31,6 +34,7 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
     private int animationStep;
     private ArrayList<Ship> ships;
     private TurnEnum turn = TurnEnum.PLAYER;
+    private AI ai;
 
     public FieldPanel(boolean isMine) {
         this.field = new Cell[10][10];
@@ -39,7 +43,19 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
         timer.setInitialDelay(0);
         init();
         this.addMouseListener(this);
-        ships = new ArrayList<>();
+
+    }
+
+    public void setAi(AI ai) {
+        this.ai = ai;
+    }
+
+    public TurnEnum getTurn() {
+        return turn;
+    }
+
+    public void setTurn(TurnEnum turn) {
+        this.turn = turn;
     }
 
     public void init() {
@@ -48,9 +64,20 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
                 field[i][j] = new Cell(i, j); //rewrite .fill
             }
         }
+        ships = new ArrayList<>();
+        // TEST SHIPS INIT
         field[0][0].setCellState(CellStateEnum.SHIP);
+        Ship ship1 = new Ship(ShipOrientationEnum.HORIZONTAL);
+        ship1.addCell(field[0][0]);
         field[5][3].setCellState(CellStateEnum.SHIP);
+        Ship ship2 = new Ship(ShipOrientationEnum.HORIZONTAL);
+        ship2.addCell(field[5][3]);
         field[7][2].setCellState(CellStateEnum.SHIP);
+        Ship ship3 = new Ship(ShipOrientationEnum.VERTICAL);
+        ship3.addCell(field[7][2]);
+        ships.add(ship1);
+        ships.add(ship2);
+        ships.add(ship3);
 
     }
 
@@ -109,7 +136,7 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
         return new Pair<>(i, j);
     }
 
-    public ShotResultEnum shotResult(int i, int j) {
+    public ShotResultEnum getShotResult(int i, int j) {
         if (field[i][j].isShooted()) {
             return ShotResultEnum.ALREADYSHOT;
         }
@@ -135,11 +162,18 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
         if (turn == TurnEnum.PLAYER) {
             Pair<Integer, Integer> coordinates = coordinatesToArrayIndex(e.getX(), e.getY());
             if (coordinates != null) {
-                ShotResultEnum result = shotResult((coordinates.getKey()), (coordinates.getValue()));
+                ShotResultEnum result = getShotResult((coordinates.getKey()), (coordinates.getValue()));
                 if (result == ShotResultEnum.SHOTWATER) {
                     switchTurn();
+                    // TRIGGER AI MOVE
+                    ai.turnProcessing();
+                    switchTurn();
                 }
-                processShotResult(result, coordinates);
+                Shot shot = new Shot();
+                shot.row = coordinates.getKey();
+                shot.col = coordinates.getValue();
+                shot.result = result;
+                processShot(shot);
             }
             this.repaint();
         }
@@ -151,9 +185,9 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
         repaint();
     }
 
-    public boolean processShotResult(ShotResultEnum result, Pair<Integer, Integer> coordinates) {
-        if (result != ShotResultEnum.ALREADYSHOT) {
-            field[coordinates.getKey()][coordinates.getValue()].setShooted(true);
+    public boolean processShot(Shot shot) {
+        if (shot.result != ShotResultEnum.ALREADYSHOT) {
+            field[shot.row][shot.col].setShooted(true);
             return true;
         }
         return false;

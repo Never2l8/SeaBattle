@@ -6,6 +6,7 @@ import panel.FieldPanel;
 import ship.Ship;
 import ship.ShipOrientationEnum;
 import shot.Shot;
+import shot.ShotResultEnum;
 
 import java.util.ArrayList;
 
@@ -22,32 +23,33 @@ public class AI {
 
     public AI(FieldPanel fieldPanel) {
         this.fieldPanel = fieldPanel;
+        this.currentTarget = new Ship();
     }
 
-    public Pair<Integer, Integer> getNextShot() {
+    public Shot getNextShot() {
         int col = lastChessOrderShot.col;
         int row = lastChessOrderShot.row;
 
         if (row == 9 && col == 9) {
             switchLayout = true;
             Cell topLeftCell = fieldPanel.getTopLeftUnshootedCell();
-            return new Pair<>(topLeftCell.getRow(), topLeftCell.getCol());
+            return new Shot(topLeftCell.getRow(), topLeftCell.getCol());
         }
         if (col < 8) {
-            return new Pair<>(row, col + 2);
+            return new Shot(row, col + 2);
         } else {
             if (!switchLayout) {
                 if (row % 2 == 0) {
-                    return new Pair<>(row + 1, 1);
+                    return new Shot(row + 1, 1);
 
                 } else {
-                    return new Pair<>(row + 1, 0);
+                    return new Shot(row + 1, 0);
                 }
             } else {
                 if (row % 2 == 0) {
-                    return new Pair<>(row + 1, 0);
+                    return new Shot(row + 1, 0);
                 } else {
-                    return new Pair<>(row + 1, 1);
+                    return new Shot(row + 1, 1);
                 }
             }
         }
@@ -110,5 +112,22 @@ public class AI {
 
         }
         return null;
+    }
+
+    public void turnProcessing() {
+        Shot shot = new Shot();
+        do {
+            if (currentTarget.getCells().size() == 0) {
+                shotProcessing(getNextShot());
+            } else {
+                shotProcessing(getNextShotIntoShip());
+            }
+        }
+        while (shot.result != ShotResultEnum.SHOTWATER);
+    }
+
+    private void shotProcessing(Shot shot) {
+        shot.result = fieldPanel.getShotResult(shot.row, shot.col);
+        fieldPanel.processShot(shot);
     }
 }

@@ -1,6 +1,7 @@
 package frames;
 
 import panel.FieldPanel;
+import panel.TurnEnum;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,6 +25,8 @@ public class NewGameWindow extends JFrame {
         playersPanel = new FieldPanel(true);
         ai = new AI(playersPanel);
         aiPanel = new FieldPanel(false);
+        aiPanel.setAi(ai);
+//        playersPanel.setAi(ai);
         Container contentPane = getContentPane();
         contentPane.setLayout(new GridLayout(1, 2));
         contentPane.add(playersPanel);
@@ -33,6 +36,7 @@ public class NewGameWindow extends JFrame {
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
         setLocationRelativeTo(null);
         //TODO disable window resizing
+        //gameLoop();
     }
 
     public void gameLoop() {
