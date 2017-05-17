@@ -14,54 +14,64 @@ import java.util.ArrayList;
  * Created by nina on 4/27/17.
  */
 public class AI {
-    Shot lastShot;
-    FieldPanel fieldPanel;
-    ArrayList<Cell> shotCandidates;
-    Shot lastChessOrderShot;
-    boolean switchLayout;
-    Ship currentTarget;
+    private Shot lastShot;
+    private FieldPanel fieldPanel;
+    private ArrayList<Cell> shotCandidates;
+    private Shot lastChessOrderShot;
+    private boolean switchLayout;
+    private Ship currentTarget;
 
-    public AI(FieldPanel fieldPanel) {
+    AI(FieldPanel fieldPanel) {
         this.fieldPanel = fieldPanel;
         this.currentTarget = new Ship();
     }
 
-    public Shot getNextShot() {
+    private Shot getNextShot() {
+        if (lastChessOrderShot == null) {
+            return storeLastShot(new Shot(0, 0), true);
+        }
         int col = lastChessOrderShot.col;
         int row = lastChessOrderShot.row;
 
         if (row == 9 && col == 9) {
             switchLayout = true;
             Cell topLeftCell = fieldPanel.getTopLeftUnshootedCell();
-            return new Shot(topLeftCell.getRow(), topLeftCell.getCol());
+            return storeLastShot(new Shot(topLeftCell.getRow(), topLeftCell.getCol()), true);
+        }
+        if(row == 9 && col == 8){
+            System.out.println("Fix me i'm broken!");
+            System.exit(0);
         }
         if (col < 8) {
-            return new Shot(row, col + 2);
+            return storeLastShot(new Shot(row, col + 2), true);
         } else {
             if (!switchLayout) {
                 if (row % 2 == 0) {
-                    return new Shot(row + 1, 1);
+                    return storeLastShot(new Shot(row + 1, 1), true);
 
                 } else {
-                    return new Shot(row + 1, 0);
+                    return storeLastShot(new Shot(row + 1, 0), true);
                 }
             } else {
                 if (row % 2 == 0) {
-                    return new Shot(row + 1, 0);
+                    return storeLastShot(new Shot(row + 1, 0), true);
                 } else {
-                    return new Shot(row + 1, 1);
+                    return storeLastShot(new Shot(row + 1, 1), true);
                 }
             }
         }
     }
 
-    public void storeLastShot(Shot lastShot) {
+    public Shot storeLastShot(Shot lastShot, boolean isChessShot) {
+        if (isChessShot) {
+            this.lastChessOrderShot = lastShot;
+        }
         this.lastShot = lastShot;
-
+        return this.lastShot;
     }
 
-    // вызываем только если попали в корабль и не убили
-    public Shot getNextShotIntoShip() {
+
+    private Shot getNextShotIntoShip() {
         if (currentTarget.getCells().size() == 1) {
             shotCandidates = fieldPanel.getShotCandidates(lastShot.row, lastShot.col);
         } else {
@@ -81,11 +91,8 @@ public class AI {
                 if (rightTarget != null && !rightTarget.isShooted()) {
                     shotCandidates.add(rightTarget);
                 }
-                Shot shot = new Shot();
-                shot.row = shotCandidates.get(0).getRow();
-                shot.col = shotCandidates.get(0).getCol();
                 shotCandidates.remove(0);
-                return shot;
+                return storeLastShot(new Shot(shotCandidates.get(0).getRow(), shotCandidates.get(0).getCol()), false);
             }
             if (currentTarget.getOrientation() == ShipOrientationEnum.VERTICAL) {
                 shotCandidates = new ArrayList<Cell>();
@@ -103,11 +110,8 @@ public class AI {
                 if (botTarget != null && !botTarget.isShooted()) {
                     shotCandidates.add(botTarget);
                 }
-                Shot shot = new Shot();
-                shot.row = shotCandidates.get(0).getRow();
-                shot.col = shotCandidates.get(0).getCol();
                 shotCandidates.remove(0);
-                return shot;
+                return storeLastShot(new Shot(shotCandidates.get(0).getRow(), shotCandidates.get(0).getCol()), false);
             }
 
         }
@@ -115,13 +119,17 @@ public class AI {
     }
 
     public void turnProcessing() {
-        Shot shot = new Shot();
+        Shot shot;
         do {
             if (currentTarget.getCells().size() == 0) {
-                shotProcessing(getNextShot());
+                shot = getNextShot();
+                shotProcessing(shot);
             } else {
-                shotProcessing(getNextShotIntoShip());
+                shot = getNextShotIntoShip();
+                shotProcessing(shot);
             }
+            System.out.println("Turn processing performed!");
+            System.out.println(shot);
         }
         while (shot.result != ShotResultEnum.SHOTWATER);
     }

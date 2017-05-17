@@ -15,4 +15,13 @@ public class Shot {
 
     public Shot() {
     }
+
+    @Override
+    public String toString() {
+        return "Shot{" +
+                "row=" + row +
+                ", col=" + col +
+                ", result=" + result +
+                '}';
+    }
 }

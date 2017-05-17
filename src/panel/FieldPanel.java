@@ -167,6 +167,7 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
                     switchTurn();
                     // TRIGGER AI MOVE
                     ai.turnProcessing();
+                    this.repaint();
                     switchTurn();
                 }
                 Shot shot = new Shot();
