@@ -1,7 +1,7 @@
 package frames;
 
-import panel.FieldPanel;
-import panel.TurnEnum;
+import panels.AiPanel;
+import panels.PlayerPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,9 +11,9 @@ import java.awt.*;
  * Created by nina on 4/8/17.
  */
 public class NewGameWindow extends JFrame {
-    FieldPanel playersPanel;
+    PlayerPanel playerPanel;
     AI ai;
-    FieldPanel aiPanel;
+    AiPanel aiPanel;
 
     public NewGameWindow() {
         init();
@@ -22,14 +22,16 @@ public class NewGameWindow extends JFrame {
     private void init() {
         setSize(1200, 625);
         setTitle("GAME");
-        playersPanel = new FieldPanel(true);
-        ai = new AI(playersPanel);
-        aiPanel = new FieldPanel(false);
+        playerPanel = new PlayerPanel();
+        ai = new AI(playerPanel);
+        aiPanel = new AiPanel();
         aiPanel.setAi(ai);
-//        playersPanel.setAi(ai);
+        aiPanel.setPlayerPanel(playerPanel);
+
+//        playerPanel.setAi(ai);
         Container contentPane = getContentPane();
         contentPane.setLayout(new GridLayout(1, 2));
-        contentPane.add(playersPanel);
+        contentPane.add(playerPanel);
         contentPane.add(aiPanel);
         setVisible(true);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -46,7 +48,7 @@ public class NewGameWindow extends JFrame {
     }
 
     private boolean bothPlayersHaveShips() {
-        return aiPanel.isSomeoneAlive() && playersPanel.isSomeoneAlive();
+        return aiPanel.isSomeoneAlive() && playerPanel.isSomeoneAlive();
     }
 
 }

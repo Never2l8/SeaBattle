@@ -1,6 +1,6 @@
 package frames;
 
-import panel.ButtonPanel;
+import panels.ButtonPanel;
 
 import javax.swing.*;
 import java.awt.*;

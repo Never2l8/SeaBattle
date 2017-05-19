@@ -1,8 +1,8 @@
 package frames;
 
 import cell.Cell;
-import javafx.util.Pair;
-import panel.FieldPanel;
+import panels.FieldPanel;
+import panels.PlayerPanel;
 import ship.Ship;
 import ship.ShipOrientationEnum;
 import shot.Shot;
@@ -15,14 +15,14 @@ import java.util.ArrayList;
  */
 public class AI {
     private Shot lastShot;
-    private FieldPanel fieldPanel;
+    private PlayerPanel playerPanel;
     private ArrayList<Cell> shotCandidates;
     private Shot lastChessOrderShot;
     private boolean switchLayout;
     private Ship currentTarget;
 
-    AI(FieldPanel fieldPanel) {
-        this.fieldPanel = fieldPanel;
+    AI(PlayerPanel playerPanel) {
+        this.playerPanel = playerPanel;
         this.currentTarget = new Ship();
     }
 
@@ -35,7 +35,7 @@ public class AI {
 
         if (row == 9 && col == 9) {
             switchLayout = true;
-            Cell topLeftCell = fieldPanel.getTopLeftUnshootedCell();
+            Cell topLeftCell = playerPanel.getTopLeftUnshootedCell();
             return storeLastShot(new Shot(topLeftCell.getRow(), topLeftCell.getCol()), true);
         }
         if(row == 9 && col == 8){
@@ -73,18 +73,18 @@ public class AI {
 
     private Shot getNextShotIntoShip() {
         if (currentTarget.getCells().size() == 1) {
-            shotCandidates = fieldPanel.getShotCandidates(lastShot.row, lastShot.col);
+            shotCandidates = playerPanel.getShotCandidates(lastShot.row, lastShot.col);
         } else {
             if (currentTarget.getOrientation() == ShipOrientationEnum.HORIZONTAL) {
                 shotCandidates = new ArrayList<Cell>();
                 Cell left = currentTarget.getLeftCell();
                 int leftRow = left.getRow();
                 int leftCol = left.getCol();
-                Cell leftTarget = fieldPanel.getCell(leftRow, leftCol - 1);
+                Cell leftTarget = playerPanel.getCell(leftRow, leftCol - 1);
                 Cell right = currentTarget.getRightCell();
                 int rightRow = right.getRow();
                 int rightCol = right.getCol();
-                Cell rightTarget = fieldPanel.getCell(rightRow, rightCol + 1);
+                Cell rightTarget = playerPanel.getCell(rightRow, rightCol + 1);
                 if (leftTarget != null && !leftTarget.isShooted()) {
                     shotCandidates.add(rightTarget);
                 }
@@ -99,11 +99,11 @@ public class AI {
                 Cell top = currentTarget.getTopCell();
                 int topRow = top.getRow();
                 int topCol = top.getCol();
-                Cell topTarget = fieldPanel.getCell(topRow - 1, topCol);
+                Cell topTarget = playerPanel.getCell(topRow - 1, topCol);
                 Cell bot = currentTarget.getBotCell();
                 int botRow = bot.getRow();
                 int botCol = bot.getCol();
-                Cell botTarget = fieldPanel.getCell(botRow + 1, botCol);
+                Cell botTarget = playerPanel.getCell(botRow + 1, botCol);
                 if (topTarget != null && !topTarget.isShooted()) {
                     shotCandidates.add(topTarget);
                 }
@@ -135,7 +135,7 @@ public class AI {
     }
 
     private void shotProcessing(Shot shot) {
-        shot.result = fieldPanel.getShotResult(shot.row, shot.col);
-        fieldPanel.processShot(shot);
+        shot.result = playerPanel.getShotResult(shot.row, shot.col);
+        playerPanel.processShot(shot);
     }
 }

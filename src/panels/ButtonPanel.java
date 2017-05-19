@@ -1,8 +1,6 @@
-package panel;
+package panels;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Created by nina on 4/8/17.

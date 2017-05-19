@@ -1,4 +1,4 @@
-package panel;
+package panels;
 
 /**
  * Created by nina on 5/11/17.

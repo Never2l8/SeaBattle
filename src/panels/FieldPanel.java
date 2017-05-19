@@ -1,4 +1,4 @@
-package panel;
+package panels;
 
 import cell.Cell;
 import cell.CellStateEnum;
@@ -22,40 +22,23 @@ import java.util.ArrayList;
  * Created by nina on 4/18/17.
  */
 
-public class FieldPanel extends JPanel implements MouseClickListener, ActionListener {
+public abstract class FieldPanel extends JPanel implements ActionListener {
+    static public TurnEnum turn = TurnEnum.PLAYER;
     final private int maxSize = 50;
     private Ellipse2D.Float innerEllipse = new Ellipse2D.Float();
     private Ellipse2D.Float midEllipse = new Ellipse2D.Float();
     private Ellipse2D.Float outerEllipse = new Ellipse2D.Float();
 
-    private Cell[][] field;
-    private boolean isMine;
+    protected Cell[][] field;
     private Timer timer;
     private int animationStep;
     private ArrayList<Ship> ships;
-    private TurnEnum turn = TurnEnum.PLAYER;
-    private AI ai;
 
-    public FieldPanel(boolean isMine) {
+    public FieldPanel() {
         this.field = new Cell[10][10];
-        this.isMine = isMine;
         this.timer = new Timer(300, this);
         timer.setInitialDelay(0);
         init();
-        this.addMouseListener(this);
-
-    }
-
-    public void setAi(AI ai) {
-        this.ai = ai;
-    }
-
-    public TurnEnum getTurn() {
-        return turn;
-    }
-
-    public void setTurn(TurnEnum turn) {
-        this.turn = turn;
     }
 
     public void init() {
@@ -78,16 +61,10 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
         ships.add(ship1);
         ships.add(ship2);
         ships.add(ship3);
-
     }
-
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        //g2.draw(new Line2D.Double(0, 0, 0, 595));
-        //g2.draw(new Line2D.Double(0, 0, 595, 0));
-        //g2.draw(new Line2D.Double(595, 0, 595, 595));
-        // g2.draw(new Line2D.Double(0, 595, 595, 595));
 
         for (int i = 0; i < 11; i++) {
             g2.draw(new Line2D.Double(50 + 50 * i, 50, 50 + 50 * i, 550));
@@ -156,29 +133,6 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
         timer.stop();
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        // SHOT FROM CLICK
-        if (turn == TurnEnum.PLAYER) {
-            Pair<Integer, Integer> coordinates = coordinatesToArrayIndex(e.getX(), e.getY());
-            if (coordinates != null) {
-                ShotResultEnum result = getShotResult((coordinates.getKey()), (coordinates.getValue()));
-                if (result == ShotResultEnum.SHOTWATER) {
-                    switchTurn();
-                    // TRIGGER AI MOVE
-                    ai.turnProcessing();
-                    this.repaint();
-                    switchTurn();
-                }
-                Shot shot = new Shot();
-                shot.row = coordinates.getKey();
-                shot.col = coordinates.getValue();
-                shot.result = result;
-                processShot(shot);
-            }
-            this.repaint();
-        }
-    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -288,104 +242,7 @@ public class FieldPanel extends JPanel implements MouseClickListener, ActionList
         }
     }
 
-    public ArrayList<Cell> getShotCandidates(int row, int col) {
-        ArrayList<Cell> shotCandidates = new ArrayList<>();
-        //клетки в углу игрового поля:
-        if (row == 0 && col == 0) {
-            if (!field[row][col + 1].isShooted()) {
-                shotCandidates.add(field[row][col + 1]);
-            }
-            shotCandidates.add(field[row + 1][col]);
-        } else if (row == 9 && col == 0) {
-            if (!field[row - 1][col].isShooted()) {
-                shotCandidates.add(field[row - 1][col]);
-            }
-            if (!field[row][col + 1].isShooted()) {
-                shotCandidates.add(field[row][col + 1]);
-            }
-        } else if (row == 0 && col == 9) {
-            if (!field[row][col - 1].isShooted()) {
-                shotCandidates.add(field[row][col - 1]);
-            }
-            if (!field[row + 1][col].isShooted()) {
-                shotCandidates.add(field[row + 1][col]);
-            }
-        } else if (row == 9 && col == 9) {
-            if (!field[row - 1][col].isShooted()) {
-                shotCandidates.add(field[row - 1][col]);
-            }
-            if (!field[row][col - 1].isShooted()) {
-                shotCandidates.add(field[row][col - 1]);
-            }
-            //клетки у края игрового поля:
-        } else if (row == 0 && col > 0 && col < 9) {
-            if (!field[row][col + 1].isShooted()) {
-                shotCandidates.add(field[row][col + 1]);
-            }
-            if (!field[row + 1][col].isShooted()) {
-                shotCandidates.add(field[row + 1][col]);
-            }
-            if (!field[row][col - 1].isShooted()) {
-                shotCandidates.add(field[row][col - 1]);
-            }
-        } else if (row == 9 && col > 0 && col < 9) {
-            if (!field[row - 1][col].isShooted()) {
-                shotCandidates.add(field[row - 1][col]);
-            }
-            if (!field[row][col + 1].isShooted()) {
-                shotCandidates.add(field[row][col + 1]);
-            }
-            if (!field[row][col - 1].isShooted()) {
-                shotCandidates.add(field[row][col - 1]);
-            }
-        } else if (row > 0 && row < 9 && col == 0) {
-            if (!field[row - 1][col].isShooted()) {
-                shotCandidates.add(field[row - 1][col]);
-            }
-            if (!field[row][col + 1].isShooted()) {
-                shotCandidates.add(field[row][col + 1]);
-            }
-            if (!field[row + 1][col].isShooted()) {
-                shotCandidates.add(field[row + 1][col]);
-            }
-        } else if (row > 0 && row < 9 && col == 9) {
-            if (!field[row - 1][col].isShooted()) {
-                shotCandidates.add(field[row - 1][col]);
-            }
-            if (!field[row + 1][col].isShooted()) {
-                shotCandidates.add(field[row + 1][col]);
-            }
-            if (!field[row][col - 1].isShooted()) {
-                shotCandidates.add(field[row][col - 1]);
-            }
-            //все остальные клетки
-        } else {
-            if (!field[row - 1][col].isShooted()) {
-                shotCandidates.add(field[row - 1][col]);
-            }
-            if (!field[row][col + 1].isShooted()) {
-                shotCandidates.add(field[row][col + 1]);
-            }
-            if (!field[row + 1][col].isShooted()) {
-                shotCandidates.add(field[row + 1][col]);
-            }
-            if (!field[row][col - 1].isShooted()) {
-                shotCandidates.add(field[row][col - 1]);
-            }
-        }
-        return shotCandidates;
-    }
 
-    public Cell getTopLeftUnshootedCell() {
-        for (int i = 0; i < field.length; i++) {
-            for (int j = 0; j < field.length; j++) {
-                if (!field[i][j].isShooted()) {
-                    return field[i][j];
-                }
-            }
-        }
-        return null;
-    }
 
     public void switchTurn() {
         if (turn == TurnEnum.AI) turn = TurnEnum.PLAYER;
