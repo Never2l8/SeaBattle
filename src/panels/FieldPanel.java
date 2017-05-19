@@ -2,7 +2,6 @@ package panels;
 
 import cell.Cell;
 import cell.CellStateEnum;
-import frames.AI;
 import javafx.util.Pair;
 import ship.Ship;
 import ship.ShipOrientationEnum;
@@ -13,7 +12,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
@@ -50,8 +48,10 @@ public abstract class FieldPanel extends JPanel implements ActionListener {
         ships = new ArrayList<>();
         // TEST SHIPS INIT
         field[0][0].setCellState(CellStateEnum.SHIP);
+        field[1][0].setCellState(CellStateEnum.SHIP);
         Ship ship1 = new Ship(ShipOrientationEnum.HORIZONTAL);
         ship1.addCell(field[0][0]);
+        ship1.addCell(field[1][0]);
         field[5][3].setCellState(CellStateEnum.SHIP);
         Ship ship2 = new Ship(ShipOrientationEnum.HORIZONTAL);
         ship2.addCell(field[5][3]);
@@ -62,6 +62,7 @@ public abstract class FieldPanel extends JPanel implements ActionListener {
         ships.add(ship2);
         ships.add(ship3);
     }
+
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
@@ -113,14 +114,29 @@ public abstract class FieldPanel extends JPanel implements ActionListener {
         return new Pair<>(i, j);
     }
 
-    public ShotResultEnum getShotResult(int i, int j) {
-        if (field[i][j].isShooted()) {
+    public ShotResultEnum getShotResult(Shot shot) {
+        int row = shot.row;
+        int col = shot.col;
+        if (field[row][col].isShooted()) {
             return ShotResultEnum.ALREADYSHOT;
         }
-        if (field[i][j].getCellState() == CellStateEnum.SHIP) {
-            return ShotResultEnum.SHOTSHIP;
+        if (field[row][col].getCellState() == CellStateEnum.SHIP) {
+            for (Ship ship : ships) {
+                if (ship.getCells().contains(field[row][col])) {
+                    try {
+                        if (!ship.willBeAliveAfterShot(shot)) {
+                            putDotsAroundShip(ship);
+                            return ShotResultEnum.SHIPKILLED;
+                        } else
+                            return ShotResultEnum.SHOTSHIP;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
         }
-        if (field[i][j].getCellState() == CellStateEnum.EMPTY) {
+        if (field[row][col].getCellState() == CellStateEnum.EMPTY) {
             return ShotResultEnum.SHOTWATER;
         }
         return null;
@@ -140,12 +156,10 @@ public abstract class FieldPanel extends JPanel implements ActionListener {
         repaint();
     }
 
-    public boolean processShot(Shot shot) {
+    public void processShot(Shot shot) {
         if (shot.result != ShotResultEnum.ALREADYSHOT) {
             field[shot.row][shot.col].setShooted(true);
-            return true;
         }
-        return false;
     }
 
     private void addShip(ArrayList<Cell> cells) {
@@ -241,7 +255,6 @@ public abstract class FieldPanel extends JPanel implements ActionListener {
             cell.setShooted(true);
         }
     }
-
 
 
     public void switchTurn() {

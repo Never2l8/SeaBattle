@@ -38,14 +38,8 @@ public class NewGameWindow extends JFrame {
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
         setLocationRelativeTo(null);
         //TODO disable window resizing
-        //gameLoop();
     }
 
-    public void gameLoop() {
-        while (bothPlayersHaveShips()) {
-
-        }
-    }
 
     private boolean bothPlayersHaveShips() {
         return aiPanel.isSomeoneAlive() && playerPanel.isSomeoneAlive();

@@ -1,6 +1,7 @@
 package ship;
 
 import cell.Cell;
+import shot.Shot;
 
 import java.util.ArrayList;
 
@@ -42,13 +43,33 @@ public class Ship {
     }
 
     public boolean isAlive() {
-        for (Cell cell : cells) {
-            if (!cell.isShooted()) {
+        for (Cell currentCell : cells) {
+            if (!currentCell.isShooted()) {
                 return true;
             }
         }
         return false;
     }
+
+
+    public boolean willBeAliveAfterShot(Shot shot) throws Exception {
+        int counter = 0;
+        Cell cell = null;
+        for (Cell currentCell : cells) {
+            if (!currentCell.isShooted()) {
+                counter++;
+                cell = currentCell;
+            }
+        }
+        if (counter > 1) {
+            return true;
+        }
+        if (counter == 1 && cell.getRow() == shot.row && cell.getCol() == shot.col) {
+            return false;
+        }
+        throw new Exception("NOT VALID SHIP ALIVE CHECK!");
+    }
+
 
     public Cell getLeftCell() {
         Cell leftCell = cells.get(0);

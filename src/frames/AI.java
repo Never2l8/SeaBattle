@@ -38,7 +38,7 @@ public class AI {
             Cell topLeftCell = playerPanel.getTopLeftUnshootedCell();
             return storeLastShot(new Shot(topLeftCell.getRow(), topLeftCell.getCol()), true);
         }
-        if(row == 9 && col == 8){
+        if (row == 9 && col == 8) {
             System.out.println("Fix me i'm broken!");
             System.exit(0);
         }
@@ -74,9 +74,11 @@ public class AI {
     private Shot getNextShotIntoShip() {
         if (currentTarget.getCells().size() == 1) {
             shotCandidates = playerPanel.getShotCandidates(lastShot.row, lastShot.col);
+            shotCandidates.remove(0);
+            return storeLastShot(new Shot(shotCandidates.get(0).getRow(),shotCandidates.get(0).getCol()),false);
         } else {
             if (currentTarget.getOrientation() == ShipOrientationEnum.HORIZONTAL) {
-                shotCandidates = new ArrayList<Cell>();
+                shotCandidates = new ArrayList<>();
                 Cell left = currentTarget.getLeftCell();
                 int leftRow = left.getRow();
                 int leftCol = left.getCol();
@@ -135,7 +137,13 @@ public class AI {
     }
 
     private void shotProcessing(Shot shot) {
-        shot.result = playerPanel.getShotResult(shot.row, shot.col);
+        shot.result = playerPanel.getShotResult(shot);
+        if (shot.result == ShotResultEnum.SHOTSHIP) {
+            currentTarget.addCell(playerPanel.getCell(shot.row, shot.col));
+        }
+        if(shot.result == ShotResultEnum.SHIPKILLED){
+            currentTarget = new Ship();
+        }
         playerPanel.processShot(shot);
     }
 }

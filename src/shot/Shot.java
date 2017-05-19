@@ -13,6 +13,11 @@ public class Shot {
         this.col = col;
     }
 
+    public Shot(int row, int col, ShotResultEnum result) {
+        this(row, col);
+        this.result = result;
+    }
+
     public Shot() {
     }
 

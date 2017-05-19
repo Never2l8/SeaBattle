@@ -34,7 +34,7 @@ public class AiPanel extends FieldPanel implements MouseClickListener {
         if (turn == TurnEnum.PLAYER) {
             Pair<Integer, Integer> coordinates = coordinatesToArrayIndex(e.getX(), e.getY());
             if (coordinates != null) {
-                ShotResultEnum result = getShotResult((coordinates.getKey()), (coordinates.getValue()));
+                ShotResultEnum result = getShotResult(new Shot(coordinates.getKey(), coordinates.getValue()));
                 if (result == ShotResultEnum.SHOTWATER) {
                     switchTurn();
                     // TRIGGER AI MOVE
@@ -43,11 +43,7 @@ public class AiPanel extends FieldPanel implements MouseClickListener {
                     playerPanel.repaint();
                     switchTurn();
                 }
-                Shot shot = new Shot();
-                shot.row = coordinates.getKey();
-                shot.col = coordinates.getValue();
-                shot.result = result;
-                processShot(shot);
+                processShot(new Shot(coordinates.getKey(), coordinates.getValue(), result));
             }
             this.repaint();
         }
