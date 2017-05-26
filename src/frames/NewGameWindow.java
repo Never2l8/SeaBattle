@@ -1,9 +1,11 @@
 package frames;
 
 import panels.AiPanel;
+import panels.FeedbackPanel;
 import panels.PlayerPanel;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.awt.*;
 
 
@@ -11,9 +13,10 @@ import java.awt.*;
  * Created by nina on 4/8/17.
  */
 public class NewGameWindow extends JFrame {
-    PlayerPanel playerPanel;
-    AI ai;
-    AiPanel aiPanel;
+    private PlayerPanel playerPanel;
+    private AI ai;
+    private AiPanel aiPanel;
+    private FeedbackPanel feedbackPanel;
 
     public NewGameWindow() {
         init();
@@ -22,17 +25,23 @@ public class NewGameWindow extends JFrame {
     private void init() {
         setSize(1200, 625);
         setTitle("GAME");
-        playerPanel = new PlayerPanel();
+        feedbackPanel = new FeedbackPanel(this);
+        feedbackPanel.setMaximumSize(new Dimension(1200,100));
+        playerPanel = new PlayerPanel(this);
         ai = new AI(playerPanel);
-        aiPanel = new AiPanel();
+        aiPanel = new AiPanel(this);
         aiPanel.setAi(ai);
         aiPanel.setPlayerPanel(playerPanel);
+        aiPanel.setFeedbackPanel(feedbackPanel);
 
-//        playerPanel.setAi(ai);
+        JPanel fieldPanel = new JPanel();
+        fieldPanel.setLayout(new GridLayout(1,2));
         Container contentPane = getContentPane();
-        contentPane.setLayout(new GridLayout(1, 2));
-        contentPane.add(playerPanel);
-        contentPane.add(aiPanel);
+        contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
+        contentPane.add(feedbackPanel);
+        fieldPanel.add(playerPanel);
+        fieldPanel.add(aiPanel);
+        contentPane.add(fieldPanel);
         setVisible(true);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
@@ -40,6 +49,12 @@ public class NewGameWindow extends JFrame {
         //TODO disable window resizing
     }
 
+
+    public void startNewGame(){
+        getContentPane().removeAll();
+        init();
+        repaint();
+    }
 
     private boolean bothPlayersHaveShips() {
         return aiPanel.isSomeoneAlive() && playerPanel.isSomeoneAlive();

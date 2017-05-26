@@ -1,6 +1,7 @@
 package panels;
 
 import cell.Cell;
+import frames.NewGameWindow;
 
 import java.util.ArrayList;
 
@@ -8,6 +9,10 @@ import java.util.ArrayList;
  * Created by nina on 5/18/17.
  */
 public class PlayerPanel extends FieldPanel {
+    public PlayerPanel(NewGameWindow window) {
+        super(window);
+    }
+
     public ArrayList<Cell> getShotCandidates(int row, int col) {
         ArrayList<Cell> shotCandidates = new ArrayList<>();
         //клетки в углу игрового поля:

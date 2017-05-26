@@ -2,7 +2,9 @@ package panels;
 
 import cell.Cell;
 import cell.CellStateEnum;
+import frames.NewGameWindow;
 import javafx.util.Pair;
+import jdk.internal.cmm.SystemResourcePressureImpl;
 import ship.Ship;
 import ship.ShipOrientationEnum;
 import shot.Shot;
@@ -26,15 +28,16 @@ public abstract class FieldPanel extends JPanel implements ActionListener {
     private Ellipse2D.Float innerEllipse = new Ellipse2D.Float();
     private Ellipse2D.Float midEllipse = new Ellipse2D.Float();
     private Ellipse2D.Float outerEllipse = new Ellipse2D.Float();
-
+    private NewGameWindow window;
     protected Cell[][] field;
     private Timer timer;
     private int animationStep;
     private ArrayList<Ship> ships;
 
-    public FieldPanel() {
+    public FieldPanel(NewGameWindow window) {
         this.field = new Cell[10][10];
         this.timer = new Timer(300, this);
+        this.window = window;
         timer.setInitialDelay(0);
         init();
     }
@@ -63,6 +66,14 @@ public abstract class FieldPanel extends JPanel implements ActionListener {
         ships.add(ship3);
     }
 
+    private void drawBorders(Graphics2D g2) {
+        Dimension size = getSize();
+        g2.draw(new Line2D.Double(0, 0, size.getWidth() - 1, 0)); //x0, y0, x1, y1
+        g2.draw(new Line2D.Double(0, 0, 0, size.getHeight() - 1));
+        g2.draw(new Line2D.Double(size.getWidth() - 1, 0, size.getWidth() - 1, size.getHeight() - 1));
+        g2.draw(new Line2D.Double(0, size.getHeight() - 1, size.getWidth() - 1, size.getHeight() - 1));
+    }
+
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
@@ -88,6 +99,7 @@ public abstract class FieldPanel extends JPanel implements ActionListener {
                 renderCell(g2, i, j);
             }
         }
+        drawBorders(g2);
     }
 
     private void renderCell(Graphics2D g2, int row, int col) {
@@ -267,6 +279,45 @@ public abstract class FieldPanel extends JPanel implements ActionListener {
             return null;
         }
         return field[row][col];
+    }
+
+    public boolean gameWillBeEndedfterShot(Shot shot) throws Exception {
+        int counter = 0;
+        Ship ship = null;
+        for (Ship currentShip : ships) {
+            if (currentShip.isAlive()) {
+                counter++;
+                ship = currentShip;
+            }
+        }
+        if (counter > 1) {
+            return false;
+        } else if (counter == 1 && !ship.willBeAliveAfterShot(shot)) {
+            return true;
+        } else if (counter == 1 && ship.willBeAliveAfterShot(shot)) {
+            return false;
+        }
+        throw new Exception("NOT VALID GAME ENDING CHECK!");
+    }
+
+    protected void showDialog() {
+        Object[] options = {"New game",
+                "Exit"};
+        int answer = JOptionPane.showOptionDialog(window,
+                "Game over. Would you like to play again?",
+                "GAME OVER",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[1]);
+        if(answer == JOptionPane.YES_OPTION){
+            window.startNewGame();
+        }
+        if(answer == JOptionPane.NO_OPTION){
+            System.exit(0);
+        }
+
     }
 
 }

@@ -14,10 +14,7 @@ public class ButtonPanel extends JPanel {
 
     public ButtonPanel() {
         button = new JButton("New Game");
-
         add(button);
-
-
     }
 
 }

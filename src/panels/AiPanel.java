@@ -1,6 +1,7 @@
 package panels;
 
 import frames.AI;
+import frames.NewGameWindow;
 import javafx.util.Pair;
 import shot.Shot;
 import shot.ShotResultEnum;
@@ -13,11 +14,16 @@ import java.awt.event.MouseEvent;
 public class AiPanel extends FieldPanel implements MouseClickListener {
     private AI ai;
     private PlayerPanel playerPanel;
+    private FeedbackPanel feedbackPanel;
 
-    public AiPanel() {
-        super();
+    public AiPanel(NewGameWindow window) {
+        super(window);
         this.addMouseListener(this);
 
+    }
+
+    public void setFeedbackPanel(FeedbackPanel feedbackPanel) {
+        this.feedbackPanel = feedbackPanel;
     }
 
     public void setPlayerPanel(PlayerPanel playerPanel) {
@@ -35,6 +41,17 @@ public class AiPanel extends FieldPanel implements MouseClickListener {
             Pair<Integer, Integer> coordinates = coordinatesToArrayIndex(e.getX(), e.getY());
             if (coordinates != null) {
                 ShotResultEnum result = getShotResult(new Shot(coordinates.getKey(), coordinates.getValue()));
+                try {
+                    if (result == ShotResultEnum.SHIPKILLED && this.gameWillBeEndedfterShot(new Shot(coordinates.getKey(), coordinates.getValue()))) {
+                        feedbackPanel.addMessage("Game over. You won!");
+                        repaint();
+                        showDialog();
+                        //feedbackPanel.repaint();
+                    }
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+
                 if (result == ShotResultEnum.SHOTWATER) {
                     switchTurn();
                     // TRIGGER AI MOVE
